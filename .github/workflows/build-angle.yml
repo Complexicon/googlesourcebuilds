@@ -22,7 +22,7 @@ jobs:
       run: |
         mkdir out\Release
         echo is_component_build = false > out\Release\args.gn
-        echo target_cpu = "x64" >> out\Release\args.gn
+        echo target_cpu = ^"x64^" >> out\Release\args.gn
         echo is_debug = false >> out\Release\args.gn
         echo angle_assert_always_on = false >> out\Release\args.gn
         echo dcheck_always_on = false >> out\Release\args.gn
