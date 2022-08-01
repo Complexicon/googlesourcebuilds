@@ -18,11 +18,13 @@ jobs:
         cd angle
         ..\depot_tools\fetch angle
     - name: setup-makefiles
+      working-directory: angle
       run: |
         mkdir out\Release
         echo is_component_build = false > out\Release\args.gn
         echo is_debug = false >> out\Release\args.gn
         ..\depot_tools\gn gen out\Release
     - name: build
+      working-directory: angle
       run: |
-        autoninja -C out/Release
+        ..\depot_tools\autoninja -C out/Release
