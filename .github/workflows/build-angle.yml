@@ -7,22 +7,22 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-
+    env:
+      DEPOT_TOOLS_WIN_TOOLCHAIN: 0
     steps:
     - name: get-depot-tools
       run: git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
     - name: fetch-angle
       run: |
-        set DEPOT_TOOLS_WIN_TOOLCHAIN=0
         mkdir angle
         cd angle
         ..\depot_tools\fetch angle
+    - name: setup-makefiles
+      run: |
         mkdir out\Release
         echo is_component_build = false > out\Release\args.gn
         echo is_debug = false >> out\Release\args.gn
         ..\depot_tools\gn gen out\Release
-        ..\
     - name: build
       run: |
-        set DEPOT_TOOLS_WIN_TOOLCHAIN=0
         autoninja -C out/Release
