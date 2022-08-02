@@ -5,7 +5,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  build-win64:
     runs-on: windows-latest
     env:
       DEPOT_TOOLS_WIN_TOOLCHAIN: 0
@@ -52,4 +52,52 @@ jobs:
           angle/out/Release/libGLESv2.dll.lib
           angle/out/Release/libEGL.dll
           angle/out/Release/libGLESv2.dll
+  build-linux64:
+    runs-on: ubuntu-latest
+    env:
+      DEPOT_TOOLS_WIN_TOOLCHAIN: 0
+    steps:
+    - name: get-depot-tools
+      run: git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+    - name: fetch-angle
+      run: |
+        mkdir angle
+        cd angle
+        ../depot_tools/fetch angle
+    - name: install-dependencies
+      run: ./build/install-build-deps.sh
+      working-directory: angle
+    - name: setup-makefiles
+      working-directory: angle
+      run: |
+        mkdir out/Release
+        echo is_component_build = false > out/Release/args.gn
+        echo is_debug = false >> out/Release/args.gn
+        echo angle_assert_always_on = false >> out/Release/args.gn
+        echo dcheck_always_on = false >> out/Release/args.gn
+        echo dcheck_is_configurable = false >> out/Release/args.gn
+        echo use_custom_libcxx = false >> out/Release/args.gn
+        echo clang_use_chrome_plugins = false >> out/Release/args.gn
+        echo symbol_level = 0 >> out/Release/args.gn
+        echo angle_build_vulkan_system_info = false >> out/Release/args.gn
+        echo angle_debug_layers_enabled = false >> out/Release/args.gn
+        echo angle_enable_d3d11 = false >> out/Release/args.gn
+        echo angle_enable_d3d9 = false >> out/Release/args.gn
+        echo angle_enable_gl = true >> out/Release/args.gn
+        echo angle_enable_vulkan = false >> out/Release/args.gn
+        echo angle_enable_gl_desktop = true >> out/Release/args.gn
+        echo angle_enable_null = false >> out/Release/args.gn
+        ../depot_tools/gn gen out/Release
+    - name: build
+      working-directory: angle
+      run: |
+        ../depot_tools/autoninja -C out/Release libEGL
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        # Artifact name
+        name: angle-shared-linux64
+        path: |
+          angle/out/Release/libEGL.*
+          angle/out/Release/libGLESv2.*
     
