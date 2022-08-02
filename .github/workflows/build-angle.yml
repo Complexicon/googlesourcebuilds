@@ -74,7 +74,7 @@ jobs:
         echo is_component_build=true >> out\Release\args.gn
         echo is_debug = false >> out\Release\args.gn
         echo skia_use_egl = true >> out\Release\args.gn
-        echo skia_gl_standard = \"gles\" >> out\Release\args.gn
+        echo skia_gl_standard = ""gles"" >> out\Release\args.gn
         echo use_custom_libcxx = false >> out\Release\args.gn
         echo skia_enable_android_utils = false >> out\Release\args.gn
         echo skia_enable_skvm_jit_when_possible = false >> out\Release\args.gn
