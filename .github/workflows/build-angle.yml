@@ -70,7 +70,7 @@ jobs:
     - name: setup-makefiles
       working-directory: angle
       run: |
-        mkdir out/Release
+        mkdir -p out/Release
         echo is_component_build = false > out/Release/args.gn
         echo is_debug = false >> out/Release/args.gn
         echo angle_assert_always_on = false >> out/Release/args.gn
