@@ -75,6 +75,7 @@ jobs:
         echo is_component_build=true >> out\Release\args.gn
         echo is_debug = false >> out\Release\args.gn
         echo skia_use_egl = true >> out\Release\args.gn
+        echo skia_use_angle = true >> out\Release\args.gn
         
         echo use_custom_libcxx = false >> out\Release\args.gn
         echo skia_enable_android_utils = false >> out\Release\args.gn
