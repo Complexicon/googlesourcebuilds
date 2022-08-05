@@ -25,7 +25,7 @@ jobs:
       run: |
         mkdir out\Release
         copy ..\v8-win.args out\Release\args.gn
-        bin\gn gen out\Release
+        ..\depot_tools\gn gen out\Release
     - name: build
       working-directory: v8
       run: |
@@ -58,11 +58,11 @@ jobs:
       run: |
         mkdir -p out/Release
         cp ../v8-linux.args out/Release/args.gn
-        bin/gn gen out/Release
+        gn gen out/Release
     - name: build
       working-directory: v8
       run: |
-        ../depot_tools/autoninja -C out/Release v8
+        autoninja -C out/Release v8
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3.1.0
       with:
