@@ -1,0 +1,305 @@
+name: google-source
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+
+###############################
+# windows section starts here #
+###############################
+  build-angle-win64:
+    runs-on: windows-latest
+    env:
+      DEPOT_TOOLS_WIN_TOOLCHAIN: 0
+    steps:
+    - name: Clone repository
+      uses: actions/checkout@v2
+    - name: get-depot-tools
+      run: git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+    - name: fetch-angle
+      run: |
+        mkdir angle
+        cd angle
+        ..\depot_tools\fetch angle
+    - name: setup-makefiles
+      working-directory: angle
+      run: |
+        mkdir out\Release
+        copy ..\skia-win.args out\Release\args.gn
+        ..\depot_tools\gn gen out\Release
+    - name: build
+      working-directory: angle
+      run: |
+        ..\depot_tools\autoninja -C out/Release libEGL
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        # Artifact name
+        name: angle-shared-win64
+        path: |
+          angle/out/Release/libEGL.dll.lib
+          angle/out/Release/libGLESv2.dll.lib
+          angle/out/Release/libEGL.dll
+          angle/out/Release/libGLESv2.dll
+          angle/out/Release/d3dcompiler*
+
+  build-skia-win64:
+    runs-on: windows-latest
+    env:
+      DEPOT_TOOLS_WIN_TOOLCHAIN: 0
+    steps:
+    - name: Clone repository
+      uses: actions/checkout@v2
+    - name: get-depot-tools
+      run: git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+    - name: fetch-skia
+      run: |
+        depot_tools\fetch skia
+        cd skia
+        python3 tools\git-sync-deps
+    - name: setup-makefiles
+      working-directory: skia
+      run: |
+        mkdir out\Release
+        copy ..\skia-win.args out\Release\args.gn
+        bin\gn gen out\Release
+    - name: build
+      working-directory: skia
+      run: |
+        ..\depot_tools\autoninja -C out/Release skia
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        # Artifact name
+        name: skia-shared-win64
+        path: |
+          skia\out\Release\skia.dll*
+
+  build-v8-win64:
+    runs-on: windows-latest
+    env:
+      DEPOT_TOOLS_WIN_TOOLCHAIN: 0
+    steps:
+    - name: Clone repository
+      uses: actions/checkout@v2
+    - name: get-depot-tools
+      run: git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+    - name: fetch-v8
+      run: |
+        depot_tools\fetch v8
+        cd v8
+    - name: setup-makefiles
+      working-directory: v8
+      run: |
+        mkdir out\Release
+        copy ..\v8-win.args out\Release\args.gn
+        ..\depot_tools\gn gen out\Release
+    - name: build
+      working-directory: v8
+      run: |
+        ..\depot_tools\autoninja -C out/Release v8
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        # Artifact name
+        name: v8-shared-win64
+        path: |
+          v8\out\Release\v8.dll*
+
+#############################
+# linux section starts here #
+#############################
+  build-angle-linux64:
+    runs-on: ubuntu-latest
+    steps:
+    - name: get-depot-tools
+      run: |
+        git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+        echo "${GITHUB_WORKSPACE}/depot_tools" >> $GITHUB_PATH
+    - name: fetch-angle
+      run: |
+        mkdir angle
+        cd angle
+        fetch angle
+    - name: install-dependencies
+      run: ./build/install-build-deps.sh
+      working-directory: angle
+    - name: setup-makefiles
+      working-directory: angle
+      run: |
+        mkdir -p out/Release
+        cp ../angle-linux.args out/Release/args.gn
+        gn gen out/Release
+    - name: build
+      working-directory: angle
+      run: |
+        autoninja -C out/Release libEGL
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        # Artifact name
+        name: angle-shared-linux64
+        path: |
+          angle/out/Release/libEGL.*
+          angle/out/Release/libGLESv2.*
+
+  build-skia-linux64:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Clone repository
+      uses: actions/checkout@v2
+    - name: get-depot-tools
+      run: |
+        git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+        echo "${GITHUB_WORKSPACE}/depot_tools" >> $GITHUB_PATH
+    - name: fetch-skia
+      run: |
+        fetch skia
+        cd skia
+        python3 tools/git-sync-deps
+    - name: setup-makefiles
+      working-directory: skia
+      run: |
+        mkdir -p out/Release
+        cp ../skia-linux.args out/Release/args.gn
+        gn gen out/Release
+    - name: build
+      working-directory: skia
+      run: |
+        autoninja -C out/Release skia
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        name: skia-shared-linux64
+        path: |
+          skia/out/Release/skia.*
+
+  build-v8-linux64:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Clone repository
+      uses: actions/checkout@v2
+    - name: get-depot-tools
+      run: |
+        git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+        echo "${GITHUB_WORKSPACE}/depot_tools" >> $GITHUB_PATH
+    - name: fetch-v8
+      run: |
+        depot_tools/fetch v8
+        cd v8
+        ./build/install-build-deps.sh
+    - name: setup-makefiles
+      working-directory: v8
+      run: |
+        mkdir -p out/Release
+        cp ../v8-linux.args out/Release/args.gn
+        gn gen out/Release
+    - name: build
+      working-directory: v8
+      run: |
+        autoninja -C out/Release v8
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        name: v8-shared-linux64
+        path: |
+          v8/out/Release/v8.*
+
+
+###########################
+# mac section starts here #
+###########################
+  build-angle-mac64:
+    runs-on: mac-12
+    steps:
+    - name: get-depot-tools
+      run: |
+        git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+        echo "${GITHUB_WORKSPACE}/depot_tools" >> $GITHUB_PATH
+    - name: fetch-angle
+      run: |
+        mkdir angle
+        cd angle
+        fetch angle
+      working-directory: angle
+    - name: setup-makefiles
+      working-directory: angle
+      run: |
+        mkdir -p out/Release
+        cp ../angle-mac.args out/Release/args.gn
+        gn gen out/Release
+    - name: build
+      working-directory: angle
+      run: |
+        autoninja -C out/Release libEGL
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        # Artifact name
+        name: angle-shared-mac64
+        path: |
+          angle/out/Release/libEGL.*
+          angle/out/Release/libGLESv2.*
+
+  build-skia-mac64:
+    runs-on: mac-12
+    steps:
+    - name: Clone repository
+      uses: actions/checkout@v2
+    - name: get-depot-tools
+      run: |
+        git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+        echo "${GITHUB_WORKSPACE}/depot_tools" >> $GITHUB_PATH
+    - name: fetch-skia
+      run: |
+        fetch skia
+        cd skia
+        python3 tools/git-sync-deps
+    - name: setup-makefiles
+      working-directory: skia
+      run: |
+        mkdir -p out/Release
+        cp ../skia-mac.args out/Release/args.gn
+        gn gen out/Release
+    - name: build
+      working-directory: skia
+      run: |
+        autoninja -C out/Release skia
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        name: skia-shared-mac64
+        path: |
+          skia/out/Release/skia.*
+
+  build-v8-mac64:
+    runs-on: mac-12
+    steps:
+    - name: Clone repository
+      uses: actions/checkout@v2
+    - name: get-depot-tools
+      run: |
+        git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+        echo "${GITHUB_WORKSPACE}/depot_tools" >> $GITHUB_PATH
+    - name: fetch-v8
+      run: |
+        depot_tools/fetch v8
+        cd v8
+    - name: setup-makefiles
+      working-directory: v8
+      run: |
+        mkdir -p out/Release
+        cp ../v8-mac.args out/Release/args.gn
+        gn gen out/Release
+    - name: build
+      working-directory: v8
+      run: |
+        autoninja -C out/Release v8
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        name: v8-shared-mac64
+        path: |
+          v8/out/Release/v8.*
