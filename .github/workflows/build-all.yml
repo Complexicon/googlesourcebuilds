@@ -114,6 +114,8 @@ jobs:
   build-angle-linux64:
     runs-on: ubuntu-latest
     steps:
+    - name: Clone repository
+      uses: actions/checkout@v2
     - name: get-depot-tools
       run: |
         git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git

@@ -8,10 +8,6 @@ v8_target_cpu="x64"
 v8_enable_backtrace = true
 v8_enable_slow_dchecks = false
 
-#is_clang = true
-#clang_base_path = "/usr"
-#clang_use_chrome_plugins = false
-#clang_version = "11.0.0"
 use_custom_libcxx = false
 
 v8_enable_i18n_support = false

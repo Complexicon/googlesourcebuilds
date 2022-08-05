@@ -2,8 +2,8 @@ is_official_build = true
 is_component_build = false
 is_debug = false
 
-skia_use_egl = true
-skia_gl_standard = "gles"
+#skia_use_egl = true
+#skia_gl_standard = "gles"
 
 skia_enable_android_utils = false
 skia_enable_skvm_jit_when_possible = false
