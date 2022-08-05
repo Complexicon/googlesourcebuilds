@@ -214,7 +214,7 @@ jobs:
 # mac section starts here #
 ###########################
   build-angle-mac64:
-    runs-on: mac-12
+    runs-on: mac-latest
     steps:
     - name: get-depot-tools
       run: |
@@ -246,7 +246,7 @@ jobs:
           angle/out/Release/libGLESv2.*
 
   build-skia-mac64:
-    runs-on: mac-12
+    runs-on: mac-latest
     steps:
     - name: Clone repository
       uses: actions/checkout@v2
@@ -277,7 +277,7 @@ jobs:
           skia/out/Release/skia.*
 
   build-v8-mac64:
-    runs-on: mac-12
+    runs-on: mac-latest
     steps:
     - name: Clone repository
       uses: actions/checkout@v2
