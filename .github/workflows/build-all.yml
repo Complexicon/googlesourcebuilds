@@ -9,7 +9,7 @@ jobs:
 ###############################
 # windows section starts here #
 ###############################
-  build-angle-win64:
+  angle-win64:
     runs-on: windows-latest
     env:
       DEPOT_TOOLS_WIN_TOOLCHAIN: 0
@@ -45,7 +45,7 @@ jobs:
           angle/out/Release/libGLESv2.dll
           angle/out/Release/d3dcompiler*
 
-  build-skia-win64:
+  skia-win64:
     runs-on: windows-latest
     env:
       DEPOT_TOOLS_WIN_TOOLCHAIN: 0
@@ -77,7 +77,7 @@ jobs:
         path: |
           skia\out\Release\skia.dll*
 
-  build-v8-win64:
+  v8-win64:
     runs-on: windows-latest
     env:
       DEPOT_TOOLS_WIN_TOOLCHAIN: 0
@@ -111,7 +111,7 @@ jobs:
 #############################
 # linux section starts here #
 #############################
-  build-angle-linux64:
+  angle-linux64:
     runs-on: ubuntu-latest
     steps:
     - name: Clone repository
@@ -147,7 +147,7 @@ jobs:
           angle/out/Release/libEGL.*
           angle/out/Release/libGLESv2.*
 
-  build-skia-linux64:
+  skia-linux64:
     runs-on: ubuntu-latest
     steps:
     - name: Clone repository
@@ -161,6 +161,7 @@ jobs:
         fetch skia
         cd skia
         python3 tools/git-sync-deps
+        sudo apt install libgles2-mesa-dev
     - name: setup-makefiles
       working-directory: skia
       run: |
@@ -178,7 +179,7 @@ jobs:
         path: |
           skia/out/Release/skia.*
 
-  build-v8-linux64:
+  v8-linux64:
     runs-on: ubuntu-latest
     steps:
     - name: Clone repository
@@ -213,7 +214,7 @@ jobs:
 ###########################
 # mac section starts here #
 ###########################
-  build-angle-mac64:
+  angle-mac64:
     runs-on: mac-latest
     steps:
     - name: get-depot-tools
@@ -245,7 +246,7 @@ jobs:
           angle/out/Release/libEGL.*
           angle/out/Release/libGLESv2.*
 
-  build-skia-mac64:
+  skia-mac64:
     runs-on: mac-latest
     steps:
     - name: Clone repository
@@ -276,7 +277,7 @@ jobs:
         path: |
           skia/out/Release/skia.*
 
-  build-v8-mac64:
+  v8-mac64:
     runs-on: mac-latest
     steps:
     - name: Clone repository
