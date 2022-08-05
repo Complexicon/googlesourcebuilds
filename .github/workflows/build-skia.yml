@@ -1,0 +1,65 @@
+name: skia
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+
+
+  build-skia-win64:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: get-depot-tools
+      run: git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+    - name: fetch-skia
+      run: |
+        depot_tools\fetch skia
+        cd skia
+        python3 tools\git-sync-deps
+    - name: setup-makefiles
+      working-directory: skia
+      run: |
+        mkdir out\Release
+        copy %GITHUB_WORKSPACE%\skia-win.args out\Release\args.gn
+        bin\gn gen out\Release
+    - name: build
+      working-directory: skia
+      run: |
+        ..\depot_tools\autoninja -C out/Release skia
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        # Artifact name
+        name: skia-shared-win64
+        path: |
+          skia\out\Release\skia.dll*
+
+
+  build-skia-linux64:
+    runs-on: ubuntu-latest
+    steps:
+    - name: get-depot-tools
+      run: git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+    - name: fetch-skia
+      run: |
+        depot_tools/fetch skia
+        cd skia
+        python3 tools/git-sync-deps
+    - name: setup-makefiles
+      working-directory: skia
+      run: |
+        mkdir -p out/Release
+        cp $GITHUB_WORKSPACE/skia-linux.args out/Release/args.gn
+        bin/gn gen out/Release
+    - name: build
+      working-directory: skia
+      run: |
+        ../depot_tools/autoninja -C out/Release skia
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        name: skia-shared-linux64
+        path: |
+          skia/out\Release/skia.*

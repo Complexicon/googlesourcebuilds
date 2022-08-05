@@ -1,11 +1,12 @@
-name: googlesource
+name: angle
 
 on:
   push:
     branches: [ "main" ]
 
 jobs:
-# angle
+
+
   build-angle-win64:
     runs-on: windows-latest
     env:
@@ -22,22 +23,7 @@ jobs:
       working-directory: angle
       run: |
         mkdir out\Release
-        echo is_component_build = false > out\Release\args.gn
-        echo is_debug = false >> out\Release\args.gn
-        echo angle_assert_always_on = false >> out\Release\args.gn
-        echo dcheck_always_on = false >> out\Release\args.gn
-        echo dcheck_is_configurable = false >> out\Release\args.gn
-        echo use_custom_libcxx = false >> out\Release\args.gn
-        echo clang_use_chrome_plugins = false >> out\Release\args.gn
-        echo symbol_level = 0 >> out\Release\args.gn
-        echo angle_build_vulkan_system_info = false >> out\Release\args.gn
-        echo angle_debug_layers_enabled = false >> out\Release\args.gn
-        echo angle_enable_d3d11 = true >> out\Release\args.gn
-        echo angle_enable_d3d9 = false >> out\Release\args.gn
-        echo angle_enable_gl = false >> out\Release\args.gn
-        echo angle_enable_vulkan = false >> out\Release\args.gn
-        echo angle_enable_gl_desktop = false >> out\Release\args.gn
-        echo angle_enable_null = false >> out\Release\args.gn
+        copy %GITHUB_WORKSPACE%\skia-win.args out\Release\args.gn
         ..\depot_tools\gn gen out\Release
     - name: build
       working-directory: angle
@@ -55,65 +41,7 @@ jobs:
           angle/out/Release/libGLESv2.dll
           angle/out/Release/d3dcompiler*
           
-          
-# skia
-  build-skia-win64:
-    runs-on: windows-latest
-    steps:
-    - name: get-depot-tools
-      run: git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
-    - name: fetch-skia
-      run: |
-        depot_tools\fetch skia
-        cd skia
-        python3 tools\git-sync-deps
-    - name: setup-makefiles
-      working-directory: skia
-      # echo skia_gl_standard = ""gles"" >> out\Release\args.gn -> fuck you quotes escaping
-      #        echo skia_use_egl = true >> out\Release\args.gn
-      #  echo skia_use_angle = true >> out\Release\args.gn
-      run: |
-        mkdir out\Release
-        echo is_official_build=true > out\Release\args.gn
-        echo is_component_build=true >> out\Release\args.gn
-        echo is_debug = false >> out\Release\args.gn
-        
-        echo use_custom_libcxx = false >> out\Release\args.gn
-        echo skia_enable_android_utils = false >> out\Release\args.gn
-        echo skia_enable_skvm_jit_when_possible = false >> out\Release\args.gn
-        echo skia_enable_tools = false >> out\Release\args.gn
-        echo skia_enable_gpu_debug_layers = false >> out\Release\args.gn
-        echo skia_enable_particles = false >> out\Release\args.gn
-        echo skia_use_libheif = false >> out\Release\args.gn
-        echo skia_use_lua = false >> out\Release\args.gn
-        echo skia_use_expat = false >> out\Release\args.gn
-        echo skia_use_xps = false >> out\Release\args.gn
-        echo skia_use_system_libjpeg_turbo = false >> out\Release\args.gn
-        echo skia_use_system_libpng = false >> out\Release\args.gn
-        echo skia_use_system_libwebp = false >> out\Release\args.gn
-        echo skia_use_system_zlib = false >> out\Release\args.gn
-        echo skia_enable_pdf = false >> out\Release\args.gn
-        echo skia_enable_skottie = false >> out\Release\args.gn
-        echo skia_enable_skparagraph = false >> out\Release\args.gn
-        echo skia_enable_skrive = false >> out\Release\args.gn
-        echo skia_enable_skshaper = false >> out\Release\args.gn
-        echo skia_enable_svg = false >> out\Release\args.gn
-        echo skia_use_icu = false >> out\Release\args.gn
-        bin\gn gen out\Release
-    - name: build
-      working-directory: skia
-      run: |
-        ..\depot_tools\autoninja -C out/Release skia
-    - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v3.1.0
-      with:
-        # Artifact name
-        name: skia-shared-win64
-        path: |
-          skia\out\Release\skia.dll*
-          
-          
-# linux section
+
   build-angle-linux64:
     runs-on: ubuntu-latest
     env:
@@ -133,22 +61,7 @@ jobs:
       working-directory: angle
       run: |
         mkdir -p out/Release
-        echo is_component_build = false > out/Release/args.gn
-        echo is_debug = false >> out/Release/args.gn
-        echo angle_assert_always_on = false >> out/Release/args.gn
-        echo dcheck_always_on = false >> out/Release/args.gn
-        echo dcheck_is_configurable = false >> out/Release/args.gn
-        echo use_custom_libcxx = false >> out/Release/args.gn
-        echo clang_use_chrome_plugins = false >> out/Release/args.gn
-        echo symbol_level = 0 >> out/Release/args.gn
-        echo angle_build_vulkan_system_info = false >> out/Release/args.gn
-        echo angle_debug_layers_enabled = false >> out/Release/args.gn
-        echo angle_enable_d3d11 = false >> out/Release/args.gn
-        echo angle_enable_d3d9 = false >> out/Release/args.gn
-        echo angle_enable_gl = true >> out/Release/args.gn
-        echo angle_enable_vulkan = false >> out/Release/args.gn
-        echo angle_enable_gl_desktop = true >> out/Release/args.gn
-        echo angle_enable_null = false >> out/Release/args.gn
+        cp $GITHUB_WORKSPACE/skia-linux.args out/Release/args.gn
         ../depot_tools/gn gen out/Release
     - name: build
       working-directory: angle
@@ -162,58 +75,3 @@ jobs:
         path: |
           angle/out/Release/libEGL.*
           angle/out/Release/libGLESv2.*
-          
-  build-skia-linux64:
-    runs-on: ubuntu-latest
-    steps:
-    - name: get-depot-tools
-      run: git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
-    - name: fetch-skia
-      run: |
-        depot_tools/fetch skia
-        cd skia
-        python3 tools/git-sync-deps
-    - name: setup-makefiles
-      working-directory: skia
-      # echo skia_gl_standard = ""gles"" >> out\Release\args.gn -> fuck you quotes escaping
-      #        echo skia_use_egl = true >> out\Release\args.gn
-      #  echo skia_use_angle = true >> out\Release\args.gn
-      run: |
-        mkdir -p out/Release
-        echo is_official_build=true > out/Release/args.gn
-        echo is_component_build=true >> out/Release/args.gn
-        echo is_debug = false >> out/Release/args.gn
-        
-        echo use_custom_libcxx = false >> out/Release/args.gn
-        echo skia_enable_android_utils = false >> out/Release/args.gn
-        echo skia_enable_skvm_jit_when_possible = false >> out/Release/args.gn
-        echo skia_enable_tools = false >> out/Release/args.gn
-        echo skia_enable_gpu_debug_layers = false >> out/Release/args.gn
-        echo skia_enable_particles = false >> out/Release/args.gn
-        echo skia_use_libheif = false >> out/Release/args.gn
-        echo skia_use_lua = false >> out/Release/args.gn
-        echo skia_use_expat = false >> out/Release/args.gn
-        echo skia_use_xps = false >> out/Release/args.gn
-        echo skia_use_system_libjpeg_turbo = false >> out/Release/args.gn
-        echo skia_use_system_libpng = false >> out/Release/args.gn
-        echo skia_use_system_libwebp = false >> out/Release/args.gn
-        echo skia_use_system_zlib = false >> out/Release/args.gn
-        echo skia_enable_pdf = false >> out/Release/args.gn
-        echo skia_enable_skottie = false >> out/Release/args.gn
-        echo skia_enable_skparagraph = false >> out/Release/args.gn
-        echo skia_enable_skrive = false >> out/Release/args.gn
-        echo skia_enable_skshaper = false >> out/Release/args.gn
-        echo skia_enable_svg = false >> out/Release/args.gn
-        echo skia_use_icu = false >> out/Release/args.gn
-        bin/gn gen out/Release
-    - name: build
-      working-directory: skia
-      run: |
-        ../depot_tools/autoninja -C out/Release skia
-    - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v3.1.0
-      with:
-        # Artifact name
-        name: skia-shared-linux64
-        path: |
-          skia/out\Release/skia.*

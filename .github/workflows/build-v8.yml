@@ -1,0 +1,64 @@
+name: v8
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+
+
+  build-v8-win64:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: get-depot-tools
+      run: git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+    - name: fetch-v8
+      run: |
+        depot_tools\fetch v8
+        cd v8
+    - name: setup-makefiles
+      working-directory: v8
+      run: |
+        mkdir out\Release
+        copy %GITHUB_WORKSPACE%\v8-win.args out\Release\args.gn
+        bin\gn gen out\Release
+    - name: build
+      working-directory: v8
+      run: |
+        ..\depot_tools\autoninja -C out/Release v8
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        # Artifact name
+        name: v8-shared-win64
+        path: |
+          v8\out\Release\v8.dll*
+
+
+  build-v8-linux64:
+    runs-on: ubuntu-latest
+    steps:
+    - name: get-depot-tools
+      run: git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+    - name: fetch-v8
+      run: |
+        depot_tools/fetch v8
+        cd v8
+        ./build/install-build-deps.sh
+    - name: setup-makefiles
+      working-directory: v8
+      run: |
+        mkdir -p out/Release
+        cp $GITHUB_WORKSPACE/v8-linux.args out/Release/args.gn
+        bin/gn gen out/Release
+    - name: build
+      working-directory: v8
+      run: |
+        ../depot_tools/autoninja -C out/Release v8
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        name: v8-shared-linux64
+        path: |
+          v8/out/Release/v8.*
