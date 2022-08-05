@@ -9,8 +9,11 @@ jobs:
 
   build-v8-win64:
     runs-on: windows-latest
+    env:
+      DEPOT_TOOLS_WIN_TOOLCHAIN: 0
     steps:
-    - uses: actions/checkout@v3
+    - name: Clone repository
+      uses: actions/checkout@v2
     - name: get-depot-tools
       run: git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
     - name: fetch-v8
@@ -21,7 +24,7 @@ jobs:
       working-directory: v8
       run: |
         mkdir out\Release
-        copy %GITHUB_WORKSPACE%\v8-win.args out\Release\args.gn
+        copy ..\v8-win.args out\Release\args.gn
         bin\gn gen out\Release
     - name: build
       working-directory: v8
@@ -39,8 +42,12 @@ jobs:
   build-v8-linux64:
     runs-on: ubuntu-latest
     steps:
+    - name: Clone repository
+      uses: actions/checkout@v2
     - name: get-depot-tools
-      run: git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+      run: |
+        git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+        echo "${GITHUB_WORKSPACE}/depot_tools" >> $GITHUB_PATH
     - name: fetch-v8
       run: |
         depot_tools/fetch v8
@@ -50,7 +57,7 @@ jobs:
       working-directory: v8
       run: |
         mkdir -p out/Release
-        cp $GITHUB_WORKSPACE/v8-linux.args out/Release/args.gn
+        cp ../v8-linux.args out/Release/args.gn
         bin/gn gen out/Release
     - name: build
       working-directory: v8

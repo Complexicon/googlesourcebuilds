@@ -9,8 +9,11 @@ jobs:
 
   build-skia-win64:
     runs-on: windows-latest
+    env:
+      DEPOT_TOOLS_WIN_TOOLCHAIN: 0
     steps:
-    - uses: actions/checkout@v3
+    - name: Clone repository
+      uses: actions/checkout@v2
     - name: get-depot-tools
       run: git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
     - name: fetch-skia
@@ -22,7 +25,7 @@ jobs:
       working-directory: skia
       run: |
         mkdir out\Release
-        copy %GITHUB_WORKSPACE%\skia-win.args out\Release\args.gn
+        copy ..\skia-win.args out\Release\args.gn
         bin\gn gen out\Release
     - name: build
       working-directory: skia
@@ -41,7 +44,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: get-depot-tools
-      run: git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+      run: |
+        git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+        echo "${GITHUB_WORKSPACE}/depot_tools" >> $GITHUB_PATH
     - name: fetch-skia
       run: |
         depot_tools/fetch skia
@@ -51,7 +56,7 @@ jobs:
       working-directory: skia
       run: |
         mkdir -p out/Release
-        cp $GITHUB_WORKSPACE/skia-linux.args out/Release/args.gn
+        cp ../skia-linux.args out/Release/args.gn
         bin/gn gen out/Release
     - name: build
       working-directory: skia

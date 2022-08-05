@@ -12,6 +12,8 @@ jobs:
     env:
       DEPOT_TOOLS_WIN_TOOLCHAIN: 0
     steps:
+    - name: Clone repository
+      uses: actions/checkout@v2
     - name: get-depot-tools
       run: git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
     - name: fetch-angle
@@ -23,7 +25,7 @@ jobs:
       working-directory: angle
       run: |
         mkdir out\Release
-        copy %GITHUB_WORKSPACE%\skia-win.args out\Release\args.gn
+        copy ..\skia-win.args out\Release\args.gn
         ..\depot_tools\gn gen out\Release
     - name: build
       working-directory: angle
@@ -48,12 +50,14 @@ jobs:
       DEPOT_TOOLS_WIN_TOOLCHAIN: 0
     steps:
     - name: get-depot-tools
-      run: git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+      run: |
+        git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+        echo "${GITHUB_WORKSPACE}/depot_tools" >> $GITHUB_PATH
     - name: fetch-angle
       run: |
         mkdir angle
         cd angle
-        ../depot_tools/fetch angle
+        fetch angle
     - name: install-dependencies
       run: ./build/install-build-deps.sh
       working-directory: angle
@@ -61,12 +65,12 @@ jobs:
       working-directory: angle
       run: |
         mkdir -p out/Release
-        cp $GITHUB_WORKSPACE/skia-linux.args out/Release/args.gn
-        ../depot_tools/gn gen out/Release
+        cp ../skia-linux.args out/Release/args.gn
+        gn gen out/Release
     - name: build
       working-directory: angle
       run: |
-        ../depot_tools/autoninja -C out/Release libEGL
+        autoninja -C out/Release libEGL
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3.1.0
       with:
