@@ -27,7 +27,7 @@ jobs:
       working-directory: angle
       run: |
         mkdir out\Release
-        copy ..\skia-win.args out\Release\args.gn
+        copy ..\angle-win.args out\Release\args.gn
         ..\depot_tools\gn gen out\Release
     - name: build
       working-directory: angle
@@ -177,7 +177,7 @@ jobs:
       with:
         name: skia-shared-linux64
         path: |
-          skia/out/Release/skia.*
+          skia/out/Release/*
 
   v8-linux64:
     runs-on: ubuntu-latest
@@ -208,7 +208,7 @@ jobs:
       with:
         name: v8-shared-linux64
         path: |
-          v8/out/Release/libv8.*
+          v8/out/Release/*
 
 
 ###########################
