@@ -1,5 +1,5 @@
 is_official_build = true
-is_component_build = false
+is_component_build = true
 is_debug = false
 
 #skia_use_egl = true

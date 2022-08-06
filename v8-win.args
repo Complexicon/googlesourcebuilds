@@ -1,4 +1,4 @@
-is_component_build = false
+is_component_build = true
 is_debug = false
 v8_monolithic = true
 
