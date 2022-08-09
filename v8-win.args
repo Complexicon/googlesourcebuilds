@@ -1,9 +1,8 @@
-is_component_build = true
+is_component_build = false
 is_debug = false
-# v8_monolithic = true
+v8_monolithic = true
 
-# This makes the build much larger: windowjs.exe goes from 17.8MB to 21.3MB.
-# is_official_build = true
+is_official_build = true
 
 target_cpu = "x64"
 v8_target_cpu = "x64"
