@@ -2,15 +2,20 @@ is_component_build = false
 is_debug = false
 v8_monolithic = true
 
-is_official_build = true
-is_clang = false
-treat_warnings_as_errors = false
+# This makes the build much larger: windowjs.exe goes from 17.8MB to 21.3MB.
+# is_official_build = true
 
 target_cpu = "x64"
 v8_target_cpu = "x64"
 
 # v8_enable_backtrace = true
 v8_enable_slow_dchecks = false
+
+is_clang = true
+clang_base_path = "../../../third_party/llvm-build/Release+Asserts"
+clang_use_chrome_plugins = false
+clang_version = "14.0.0"
+use_custom_libcxx = false
 
 v8_enable_i18n_support = false
 

@@ -104,9 +104,9 @@ jobs:
       uses: actions/upload-artifact@v3.1.0
       with:
         # Artifact name
-        name: v8-shared-win64
+        name: v8-static-win64
         path: |
-          v8\out\Release\*
+          v8\out\Release\obj\v8_monolith.lib
 
 #############################
 # linux section starts here #
@@ -206,7 +206,7 @@ jobs:
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3.1.0
       with:
-        name: v8-shared-linux64
+        name: v8-static-linux64
         path: |
           v8/out/Release/obj/libv8_monolith.a
 
